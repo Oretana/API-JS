@@ -13,6 +13,23 @@
         padding: 0;
         margin: 0;
       }
+      #search {
+       display: block;
+       position: absolute;
+       z-index: 2;
+       top: 20px;
+       left: 74px;
+     }
+      #BasemapToggle {
+       position: absolute;
+       top: 20px;
+       right: 20px;
+       z-index: 50;
+     }
+     #legendPane {
+      border: solid #97DCF2 1px;
+      }
+
     </style>
     <script>
         var map;
@@ -22,10 +39,14 @@
           "esri/SpatialReference",
           "esri/layers/ArcGISDynamicMapServiceLayer",
           "esri/layers/FeatureLayer",
+          "esri/dijit/Search",
+          "esri/dijit/BasemapToggle",
+          "esri/dijit/Legend",
+          "esri/tasks/locator",
           "dojo/domReady!"
           ];
 
-        var callback = function(Map, Extent, SpatialReference, ArcGISDynamicMapServiceLayer, FeatureLayer) {
+        var callback = function(Map, Extent, SpatialReference, ArcGISDynamicMapServiceLayer, FeatureLayer, Search, BasemapToggle, Legend, Locator) {
             var extent = new Extent(-3985922.501953552,6281347.715596641,3444979.6398161673,8238135.6396966325, new SpatialReference({ wkid:102100 }));
             map = new Map("mapDiv", {
                 basemap: "satellite",
@@ -42,6 +63,44 @@
 
           map.addLayer(estatico);
 
+          var search = new Search({
+                          map: map
+                       }, "search");
+                       search.startup();
+                       var params = {
+                           "map": map
+                       };
+            //new BasemapToggle(params, srcNodeRef)
+            var toggle = new BasemapToggle({
+              map: map,
+              basemap: "topo"
+            }, "BasemapToggle");
+            toggle.startup();
+
+
+            //new Legend(params, srcNodeRef)
+            var leyend = new Legend({
+              map: map
+            }, "legendDiv");
+            leyend.startup();
+
+            //new Locator(url)
+            var locator = new Locator("https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer");
+
+            //nos va a devolver directamente en la consola las opciones de consultar francia
+            var params = {
+              text: "francia",
+              f: "json"
+            };
+
+            var promesa = locator.suggestLocations(params);
+            var callback = function(results){
+              console.log(results);
+            };
+            //locator.suggestLocations(params).addCallback(functiion(results){
+            //console.log(results);
+            //});
+            promesa.addCallback(callback);
 
   };
         require(modulos, callback);
@@ -50,7 +109,12 @@
 </head>
 
 <body>
+  <div id="search"></div>
   <div id="mapDiv"></div>
+  <div id="map" class="map">
+    <div id="BasemapToggle"></div>
+  </div>
+  <div id="legendDiv"></div>
 </body>
 
 </html>
