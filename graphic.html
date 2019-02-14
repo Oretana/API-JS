@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>Mostrar un mapa con JSAPI 3.27</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/3.27/esri/css/esri.css">
+    <script src="https://js.arcgis.com/3.27/"></script>
+    <style>
+      html, body, #mapDiv {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+    <script>
+        var map;
+        var modulos = [
+        "esri/map",
+        "esri/symbols/SimpleMarkerSymbol",
+        "esri/symbols/SimpleLineSymbol",
+        "esri/graphic",
+        "esri/Color",
+        "esri/geometry/Point",
+        "dojo/domReady!"];
+
+        var callback = function(
+        Map,
+        SimpleMarkerSymbol,
+        SimpleLineSymbol,
+        Graphic,
+        Color,
+        Point) {
+            map = new Map("mapDiv", {
+                basemap: "satellite",
+                center: [-122.45, 37.75],
+                zoom: 13
+            });
+
+
+            //borde del simbolo
+              var line = new SimpleLineSymbol();
+              line.setColor(new Color([255, 0, 197, 1]));
+              line.setStyle(SimpleLineSymbol.STYLE_DOT);
+            //relleno del simbolo
+              var marker = new SimpleMarkerSymbol();
+              marker.setColor(new Color([230, 0, 169, 0.38]));
+              marker.setOutline(line);
+
+              graphic = new Graphic(new Point(-122.45, 37.75), marker)
+              map.on("load",function(){
+
+              map.graphics.add(graphic);
+              });
+
+        };
+        require(modulos, callback);
+    </script>
+</head>
+
+<body>
+  <div id="mapDiv"></div>
+</body>
+
+</html>
